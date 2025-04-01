@@ -1,0 +1,17 @@
+ ## Using @PathVariable
+ -> The @PathVariable annotation is used to extract data from the URL path.
+ It allows you to define placeholders in your request mapping URL and bind those placeholders 
+ to method parameters. Let’s consider an example where you have a REST API endpoint for retrieving a user’s details by their ID:
+ 
+ @RestController
+@RequestMapping("/users") 
+public class UserController { 
+
+	@GetMapping("/{userId}") 
+	public ResponseEntity<User> getUserDetails(@PathVariable Long userId) { 
+		// Implementation to fetch user details based on the provided userId 
+		// ... 
+		return ResponseEntity.ok(user); 
+	} 
+} 
+ 

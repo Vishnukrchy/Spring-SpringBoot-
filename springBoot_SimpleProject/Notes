@@ -1,0 +1,74 @@
+ @RequestBody
+Simply put, the @RequestBody annotation maps the HttpRequest body to a transfer or domain object, enabling automatic deserialization of the inbound HttpRequest body onto a Java object.
+
+First, let’s have a look at a Spring controller method:
+
+@PostMapping("/request")
+public ResponseEntity postController(
+  @RequestBody LoginForm loginForm) {
+ 
+    exampleService.fakeAuthenticate(loginForm);
+    return ResponseEntity.ok(HttpStatus.OK);
+}
+Copy
+Spring automatically deserializes the JSON into a Java type, assuming an appropriate one is specified.
+
+By default, the type we annotate with the @RequestBody annotation must correspond to the JSON sent from our client-side controller:
+
+public class LoginForm {
+    private String username;
+    private String password;
+    // ...
+}
+Copy
+Here, the object we use to represent the HttpRequest body maps to our LoginForm object.
+
+Let’s test this using CURL:
+
+curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-X POST --data 
+  '{"username": "johnny", "password": "password"}' "https://localhost:8080/spring-boot-rest/post/request"
+Copy
+This is all we need for a Spring REST API and an Angular client using the @RequestBody annotation.
+
+3. @ResponseBody
+The @ResponseBody annotation tells a controller that the object returned is automatically serialized into JSON and passed back into the HttpResponse object.
+
+Suppose we have a custom Response object:
+
+public class ResponseTransfer {
+    private String text; 
+    
+    // standard getters/setters
+}
+Copy
+Next, the associated controller can be implemented:
+
+@Controller
+@RequestMapping("/post")
+public class ExamplePostController {
+
+    @Autowired
+    ExampleService exampleService;
+
+    @PostMapping("/response")
+    @ResponseBody
+    public ResponseTransfer postResponseController(
+      @RequestBody LoginForm loginForm) {
+        return new ResponseTransfer("Thanks For Posting!!!");
+     }
+}
+Copy
+In the developer console of our browser or using a tool like Postman, we can see the following response:
+
+{"text":"Thanks For Posting!!!"}
+Copy
+Remember, we don’t need to annotate the @RestController-annotated controllers with the @ResponseBody annotation since Spring does it by default.
+
+3.1. Setting the Content Type
+When we use the @ResponseBody annotation, we’re still able to explicitly set the content type that our method returns.
+
+For that, we can use the @RequestMapping‘s produces attribute. Note that annotations like @PostMapping, @GetMapping, etc. define aliases for that parameter.
+
